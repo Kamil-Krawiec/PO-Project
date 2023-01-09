@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import *
+from django.contrib import messages
 from django.views.generic import ListView,DetailView
 from django.utils import timezone
 
@@ -29,13 +30,44 @@ def add_to_cart(request,slug):
         if order.products.filter( product__slug = product.slug).exists():
             order_item.quantity+=1
             order_item.save()
+            messages.info(request,"Product quantity updated")
         else:
+            messages.info(request,"Product added")
             order.products.add(order_item)
 
 
     else:
         order = Order.objects.create(user=request.user,ordered_date = timezone.now())
         order.products.add(order_item)
-
+        messages.info(request,"Cart created and product added")
     return redirect("Product-View",slug=slug)
 
+def remove_from_cart(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    order_qs = Order.objects.filter(
+        user=request.user,
+        ordered=False
+    )
+    if order_qs.exists():
+        order = order_qs[0]
+        # check if the order item is in the order
+        if order.products.filter(product__slug=product.slug).exists():
+            order_item = OrderItem.objects.filter(
+                product=product,
+                user=request.user,
+                ordered=False
+            )[0]
+            if order_item.quantity > 1:
+                order_item.quantity -= 1
+                order_item.save()
+            else:
+                order.products.remove(order_item)
+            messages.info(request, "This item quantity was updated.")
+            return redirect("Product-View", slug=slug)
+        else:
+            messages.info(request, "This item was not in your cart")
+            return redirect("Product-View", slug=slug)
+    else:
+        messages.info(request, "You do not have an active order")
+        return redirect("Product-View", slug=slug)
+        
