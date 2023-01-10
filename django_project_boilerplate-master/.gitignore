@@ -1,4 +1,4 @@
-env
+# env
 **/*.pyc
 **/__pycache__
 media
@@ -10,5 +10,5 @@ media
 # Accept these files in the repository
 !.gitignore
 !.travis.yml
-/.env
+# /.env
 /.vscode
