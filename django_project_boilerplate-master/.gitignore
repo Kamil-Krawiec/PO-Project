@@ -1,13 +1,14 @@
-env
-**/*.pyc
-**/__pycache__
-media
-.DS_Store
-*.sqlite3
-*.env
+# # env
+# **/*.pyc
+# **/__pycache__
+# media
+# .DS_Store
+# *.sqlite3
+# # *.env
+# ../.DS_Store
 
-# Accept these files in the repository
-!.gitignore
-!.travis.yml
-/.env
-/.vscode
+# # Accept these files in the repository
+# !.gitignore
+# !.travis.yml
+# # /.env
+# /.vscode
