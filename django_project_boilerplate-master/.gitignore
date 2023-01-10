@@ -2,8 +2,8 @@
 # **/*.pyc
 # **/__pycache__
 # media
-# .DS_Store
-# *.sqlite3
+.DS_Store
+*.sqlite3
 # # *.env
 # ../.DS_Store
 
@@ -11,4 +11,4 @@
 # !.gitignore
 # !.travis.yml
 # # /.env
-# /.vscode
+/.vscode
