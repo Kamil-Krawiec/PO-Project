@@ -4,7 +4,7 @@
 media
 .DS_Store
 *.sqlite3
-*.env
+# *.env
 ../.DS_Store
 
 # Accept these files in the repository
