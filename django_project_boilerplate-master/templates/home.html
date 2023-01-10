@@ -1,14 +1,17 @@
-home page
 
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}" />
 <h2> List of products</h2>
 
 {% for product in object_list %}
- {{product}}
-<a href = {{product.get_absolute_url}}>link</a> 
+    <p>{{product.name}}
+<a href = {{product.get_absolute_url}}>link</a>
 <a href= {{product.get_add_to_cart_url}}>add to cart</a>
+    </p>
 <hr>
 {% endfor %}
 
