@@ -1,8 +1,24 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
+from django.core.exceptions import ValidationError
 
 # Create your models here.
+
+def validate_rate(value):
+    if value>5 or value<0:
+        raise ValidationError(
+            ('%(value)s is not proper'),
+            params={'value': value},
+        )    
+
+class Rating(models.Model):
+    rate = models.FloatField(validators=[validate_rate])
+    ratings = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return str(self.rate)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -23,7 +39,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE,default=None)
     slug = models.SlugField()
     discount_price = models.FloatField(default=0.1)
-
+    stars = models.ForeignKey(Rating,on_delete=models.CASCADE,default=None,blank=True )
 
     def __str__(self):
         return "Art: "+str(self.name) + ",cena: "+str(self.price)+", kategoria: "+str(self.category)
@@ -36,6 +52,10 @@ class Product(models.Model):
 
     def get_remove_from_cart_url(self):
         return reverse("remove-from-cart", kwargs={"slug": self.slug})
+
+    def set_new_rate(self,rate):
+        self.stars.rate = ((self.stars.ratings*self.stars.rate)+rate)/(self.stars.ratings+1)
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -83,5 +103,3 @@ class Order(models.Model):
         return total
 
     
-
-
