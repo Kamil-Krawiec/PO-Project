@@ -15,7 +15,6 @@ class ProductDetailView(DetailView):
     model=Product
     template_name="product.html"
 
-
 def add_to_cart(request, slug):
     product = get_object_or_404(Product, slug=slug)
     order_item, created = OrderItem.objects.get_or_create(
