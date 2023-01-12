@@ -83,7 +83,7 @@ class Order(models.Model):
 
     ordered_date = models.DateTimeField()
     
-    coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, blank=True, null=True)
 
     def get_total(self):
         total = 0
