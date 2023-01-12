@@ -57,10 +57,11 @@
 
 }
 section{
-    background-image: url("../static/images/bodyimg.png");
+    background-image: url("../static/images/fruits.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     font-size: 100px;
+    text-shadow: 1px 1px 10px black, 1px 1px 10px black;
 }
 
 .arrow {
