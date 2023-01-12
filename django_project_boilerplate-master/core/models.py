@@ -1,8 +1,18 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
+from django.core.exceptions import ValidationError
+from django.db.models import Avg
+
 
 # Create your models here.
+
+def validate_rate(value):
+    if value>5 or value<0:
+        raise ValidationError(
+            ('%(value)s is not proper'),
+            params={'value': value},
+        )    
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -18,12 +28,12 @@ class Coupon(models.Model):
         return self.code
 
 class Product(models.Model):
+
     name = models.CharField(max_length=200)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE,default=None)
     slug = models.SlugField()
     discount_price = models.FloatField(default=0.1)
-
 
     def __str__(self):
         return "Art: "+str(self.name) + ",cena: "+str(self.price)+", kategoria: "+str(self.category)
@@ -37,6 +47,7 @@ class Product(models.Model):
     def get_remove_from_cart_url(self):
         return reverse("remove-from-cart", kwargs={"slug": self.slug})
 
+
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
@@ -47,18 +58,18 @@ class OrderItem(models.Model):
         return f"{self.quantity} of {self.product.name}"
 
     def get_total_item_price(self):
-        return self.quantity * self.product.price
+        return round(self.quantity * self.product.price, 2)
 
     def get_total_discount_item_price(self):
-        return self.quantity * self.product.discount_price
+        return round(self.quantity * self.product.discount_price,2)
 
     def get_amount_saved(self):
-        return self.get_total_item_price() - self.get_total_discount_item_price()
+        return round(self.get_total_item_price() - self.get_total_discount_item_price(), 2)
 
     def get_final_price(self):
         if self.product.discount_price:
-            return self.get_total_discount_item_price()
-        return self.get_total_item_price()
+            return round(self.get_total_discount_item_price(), 2)
+        return round(self.get_total_item_price(), 2)
 
 
 class Order(models.Model):
@@ -72,7 +83,7 @@ class Order(models.Model):
 
     ordered_date = models.DateTimeField()
     
-    coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, blank=True, null=True)
 
     def get_total(self):
         total = 0
@@ -83,5 +94,3 @@ class Order(models.Model):
         return total
 
     
-
-
