@@ -1,78 +1,184 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <main>
-    <div class="container">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li
+                        {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-    <div class="table-responsive text-nowrap">
-    <h2>Order Summary</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">LP</th>
-            <th scope="col">Product</th>
-            <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Total Item Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for order_item in object.products.all %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td>{{ order_item.product.name }}</td>
-            <td>{{ order_item.product.price }}</td>
-            <td>
-                <a href="{% url 'remove-single-item-from-cart' order_item.product.slug %}">-</a>
-                {{ order_item.quantity }}
-                <a href="{% url 'add-to-cart' order_item.product.slug %}">+</i></a>
-            </td>
-            <td>
-            {% if order_item.product.discount_price %}
-                ${{ order_item.get_total_discount_item_price }}
-                <span class="badge badge-primary" style="color:black;">Saving ${{ order_item.get_amount_saved }}</span>
-            {% else %}
-                ${{ order_item.get_total_item_price }}
-            {% endif %}
-            <a style='color: red;' href="{% url 'remove-from-cart' order_item.product.slug %}">
-                Remove
-            </a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan='5'>Your cart is empty</td>
-        </tr>
-        <tr>
-            <td colspan="5">
-            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
-            </td>
-        </tr>
-        {% endfor %}
-        {% if object.coupon %}
-        <tr>
-            <td colspan="4"><b>Coupon</b></td>
-            <td><b>-${{ object.coupon.amount }}</b></td>
-        </tr>
-        {% endif %}
-        {% if object.get_total %}
-        <tr>
-            <td colspan="4"><b>Order Total</b></td>
-            <td><b>${{ object.get_total }}</b></td>
-        </tr>
-        <tr>
-            <td colspan="5">
-            <a class='btn btn-warning float-right ml-2' href='/checkout/'>Proceed to checkout</a>
-            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
-            </td>
-        </tr>
-        {% endif %}
-        </tbody>
-    </table>
+    <main>
 
-    </div>
+        <div class="container py-5 h-100 h-100 h-custom" style="filter: drop-shadow(0 0 0.35rem black);">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12">
+                    <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <div class="col-lg-8">
+                                    <div class="p-5">
+                                        <div class="d-flex justify-content-between align-items-center mb-5">
+                                            <h1 class="fw-bold mb-0 text-black">Shopping Cart</h1>
+                                            <h6 class="mb-0 text-muted">
+                                                {% if object.get_total %}
 
-    </div>
-  </main>
+                                                    <p><b>{{ object.get_items_sum }} item(s)</b></p>
+
+
+                                                {% endif %}
+
+
+                                            </h6>
+
+
+                                        </div>
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th style="width:40%">Product</th>
+                                                <th style="width:25%">Quantity</th>
+                                                <th style="width:10%">Price</th>
+                                                <th style="width:15%; white-space: nowrap">Total</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+
+
+
+                                        {% if object.get_items_sum == 0 %}
+                                            <h5 style="position: absolute; top: 50%">Your basket is <span style="color: red">empty</span>, go pick some items!</h5>
+                                        {% endif %}
+                                        {% for order_item in object.products.all %}
+
+                                            <div class="row mb-4 d-flex justify-content-between align-items-center">
+                                                <div class="col-md-2 col-lg-2 col-xl-2">
+                                                    <img
+                                                            src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img5.webp"
+                                                            class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                                </div>
+                                                <div class="col-md-3 col-lg-3 col-xl-3">
+                                                    <h6 class="text-muted">{{ order_item.product.category }}</h6>
+                                                    <h6 class="text-black mb-0">{{ order_item.product.name }}</h6>
+                                                </div>
+                                                <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+
+
+                                                    <a class="btn btn-link px-2" style="text-decoration: none"
+                                                       href="{% url 'remove-single-item-from-cart' order_item.product.slug %}">
+                                                        <span style="text-decoration: none">-</span>
+                                                    </a>
+
+                                                    <div style="border: solid grey 1px; ; border-radius: 10px; padding: 5px">{{ order_item.quantity }}</div>
+
+                                                    <a class="btn btn-link px-2" style="text-decoration: none"
+                                                       href="{% url 'add-to-cart' order_item.product.slug %}">
+                                                        <span style="text-decoration: none">+</span>
+                                                    </a>
+
+
+                                                </div>
+                                                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1"
+                                                     style="display: flex; flex-direction: row; justify-content: space-between">
+                                                    <h6>${{ order_item.product.price }}</h6>
+
+                                                    <div class="mb-0" style="display: flex; flex-direction: column;">
+                                                        {% if order_item.product.discount_price %}
+                                                            <h6 style="color: red; transform: translateX(20px)">
+                                                                ${{ order_item.get_total_discount_item_price }}</h6>
+                                                            <span class="badge badge-primary" style="color:black;">Saving ${{ order_item.get_amount_saved }}</span>
+                                                        {% else %}
+                                                            <h6>${{ order_item.get_total_item_price }}</h6>
+                                                        {% endif %}
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                                    <a style='color: red; white-space: nowrap'
+                                                       href="{% url 'remove-from-cart' order_item.product.slug %}">
+                                                        Remove
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <hr class="my-4">
+
+                                        {% endfor %}
+
+
+                                        <div class="pt-5" style="position: absolute; left: 0; bottom: 0; padding: 40px">
+                                            <h6 class="mb-0"><a href='/' class="text-body"><i
+                                                    class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 bg-grey" style="background-color: rgba(202,202,202,0.4)">
+                                    <div class="p-5">
+                                        <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
+                                        <hr class="my-4">
+
+
+                                        <h5 class="text-uppercase mb-3">Shipping</h5>
+
+                                        <div class="mb-4 pb-2">
+                                            <select class="select">
+                                                <option value="1">Standard-Delivery- €5.00</option>
+                                                <option value="2">Two</option>
+                                                <option value="3">Three</option>
+                                                <option value="4">Four</option>
+                                            </select>
+                                        </div>
+
+                                        <h5 class="text-uppercase mb-3">Give code</h5>
+
+                                        <div class="mb-5">
+                                            <div class="form-outline">
+                                                <div style="display: flex; flex-direction: row">
+                                                    <input type="text" id="form3Examplea2"
+                                                           class="form-control form-control-lg"/>
+                                                    <a class='btn btn-success float-right' href='/'>Apply</a>
+                                                </div>
+                                                {% if object.coupon %}
+                                                    <label class="form-label" for="form3Examplea2">Coupon:
+                                                        <b>-${{ object.coupon.amount }}</b></label>
+                                                {% else %}
+                                                    <label class="form-label" for="form3Examplea2">Enter your
+                                                        code</label>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <div class="d-flex justify-content-between mb-5">
+                                            <h5 class="text-uppercase">Total price</h5>
+                                            <h5>        {% if object.get_total %}
+                                                <p><b>${{ object.get_total }}</b></p>
+                                            {% else %}
+                                                <p><b>$0.00</b></p>
+
+                                            {% endif %}
+                                                </tbody>
+                                            </h5>
+                                        </div>
+
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between">
+                                            <a class='btn btn-warning float-right ml-2' href='/checkout/'>Proceed to
+                                                checkout</a>
+                                            <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
 
 {% endblock content %}

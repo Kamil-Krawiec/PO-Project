@@ -4,11 +4,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.views.generic import ListView,DetailView,View
 from django.utils import timezone
+from .forms import ReviewForm
 
 
 class HomeView(ListView):
     model=Product
     template_name="home.html"
+
+
 
 
 class ProductDetailView(DetailView):
@@ -82,7 +85,7 @@ def remove_from_cart(request, slug):
         else:
             messages.info(request, "This item was not in your cart")
             return redirect("Product-View", slug=slug)
-            
+
     else:
         messages.info(request, "You do not have an active order")
         return redirect("Product-View", slug=slug)
@@ -117,3 +120,34 @@ def remove_single_item_from_cart(request, slug):
     else:
         messages.info(request, "You do not have an active order")
         return redirect("Product-View", slug=slug)
+
+
+def submit_review(request, id):
+    url = request.META.get('HTTP_REFERER')
+    if request.method == 'POST':
+        # try:
+        #     reviews = ReviewRating.objects.get(product=id)
+        #     form = ReviewForm(request.POST, instance=reviews)
+        #     form.save()
+        #     messages.success(request, 'Thank you! Your review has been updated.')
+        #     return redirect(url)
+        # except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                data = ReviewRating()
+                data.rating = form.cleaned_data['rating']
+                data.review = form.cleaned_data['review']
+                product = get_object_or_404(Product, id=id)
+                data.product = product
+                data.save()
+                messages.success(request, 'Thank you! Your review has been submitted.')
+                return redirect(url)
+
+def all_reviews(request,id):
+    product = get_object_or_404(Product, id=id)
+    review_list = ReviewRating.objects.filter(product = product)
+    context = {
+        "product": product,
+        "review_list": review_list
+    }
+    return render(request, "product.html", context)
