@@ -19,32 +19,36 @@ class ProductDetailView(DetailView):
     template_name="product.html"
 
 def add_to_cart(request, slug):
-    product = get_object_or_404(Product, slug=slug)
-    order_item, created = OrderItem.objects.get_or_create(
-        product=product,
-        user=request.user,
-        ordered=False
-    )
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    if order_qs.exists():
-        order = order_qs[0]
-        # check if the order item is in the order
-        if order.products.filter(product__slug=product.slug).exists():
-            order_item.quantity += 1
-            order_item.save()
-            messages.info(request, "This item quantity was updated.")
-            return redirect("order-summary")
+    try:
+        product = get_object_or_404(Product, slug=slug)
+        order_item, created = OrderItem.objects.get_or_create(
+            product=product,
+            user=request.user,
+            ordered=False
+        )
+        order_qs = Order.objects.filter(user=request.user, ordered=False)
+        if order_qs.exists():
+            order = order_qs[0]
+            # check if the order item is in the order
+            if order.products.filter(product__slug=product.slug).exists():
+                order_item.quantity += 1
+                order_item.save()
+                messages.info(request, "This item quantity was updated.")
+                return redirect("order-summary")
+            else:
+                order.products.add(order_item)
+                messages.info(request, "This item was added to your cart.")
+                return redirect("order-summary")
         else:
+            ordered_date = timezone.now()
+            order = Order.objects.create(
+                user=request.user, ordered_date=ordered_date)
             order.products.add(order_item)
             messages.info(request, "This item was added to your cart.")
             return redirect("order-summary")
-    else:
-        ordered_date = timezone.now()
-        order = Order.objects.create(
-            user=request.user, ordered_date=ordered_date)
-        order.products.add(order_item)
-        messages.info(request, "This item was added to your cart.")
-        return redirect("order-summary")
+    except Exception:
+            messages.ERROR(request, "Something went wrong")
+            return render(request, 'Home-View')
 
 
 
@@ -185,6 +189,9 @@ class CheckoutView(View):
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
             messages.info(self.request, "You do not have an active order")
+            return redirect("Home-View")
+        except Exception:
+            messages.info(self.request, "Something gone wrong")
             return redirect("Home-View")
 
     def post(self, *args, **kwargs):
@@ -353,5 +360,24 @@ class AddCouponView(View):
 
 
 def success_view(request):
-    print(request)
+    messages.success(request, "Your order is ordered")
     return render(request,'success.html')
+
+def order_history(request):
+    context={
+        'orders':Order.objects.filter(
+            user=request.user,
+            ordered=True
+        )
+    }
+    return render(request,'order_history.html',context)
+
+
+def order_details(request,id):
+    order = get_object_or_404(Order, id=id)
+    print(order)
+    context={
+        'order':order,
+        'products': order.products.all()
+    }
+    return render(request,'order_details.html',context)

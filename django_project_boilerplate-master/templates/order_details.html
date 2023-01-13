@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{%block content%}
+
+{{order.shipping_address}}
+
+{%for product in products%}
+{{product.product}}
+{%endfor%}
+
+
+{%endblock%}

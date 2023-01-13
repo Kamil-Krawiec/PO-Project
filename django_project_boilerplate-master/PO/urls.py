@@ -20,7 +20,8 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
     path('checkout/success', success_view, name='success'),
-
+    path('history/', order_history, name='success'),
+    path('history/order/<id>', order_details, name='details'),
 ]
 
 if settings.DEBUG:

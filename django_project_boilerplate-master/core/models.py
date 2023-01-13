@@ -137,6 +137,9 @@ class Order(models.Model):
             total += 1
         return total
 
+    def __str__(self) -> str:
+        return f"{self.user}, {self.ordered_date},{self.products.all()}"
+
     
 class ReviewRating(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
