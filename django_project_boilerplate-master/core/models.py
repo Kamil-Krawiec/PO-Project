@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import Avg
+import uuid
 
 
 # Create your models here.
@@ -29,6 +30,7 @@ class Coupon(models.Model):
 
 class Product(models.Model):
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE,default=None)
@@ -93,4 +95,18 @@ class Order(models.Model):
             total -= self.coupon.amount
         return total
 
+    def get_items_sum(self):
+        total = 0
+        for order_item in self.products.all():
+            total += 1
+        return total
+
     
+class ReviewRating(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    review = models.TextField(max_length=500, blank=True)
+    rating = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.review
