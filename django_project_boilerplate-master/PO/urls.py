@@ -16,7 +16,9 @@ urlpatterns = [
     path('cart/',OrderSummaryView.as_view(),name="order-summary"),
     path('ratings/', include('star_ratings.urls', namespace='ratings')),
     path('submit_review/<id>/', submit_review, name='submit_review'),
-    path('all_reviews/<id>', all_reviews, name='all_reviews')
+    path('all_reviews/<id>', all_reviews, name='all_reviews'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
+    path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
 
 
 ]

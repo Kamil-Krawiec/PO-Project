@@ -4,9 +4,31 @@ from django.shortcuts import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import Avg
 import uuid
+from django_countries.fields import CountryField
+from django_countries.widgets import CountrySelectWidget
+
+ADDRESS_CHOICES = (
+    ('B', 'Billing'),
+    ('S', 'Shipping'),
+)
 
 
-# Create your models here.
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    street_address = models.CharField(max_length=100)
+    apartment_address = models.CharField(max_length=100)
+    country = CountryField(multiple=False)
+    zip = models.CharField(max_length=100)
+    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name_plural = 'Addresses'
+
 
 def validate_rate(value):
     if value>5 or value<0:
@@ -74,18 +96,40 @@ class OrderItem(models.Model):
         return round(self.get_total_item_price(), 2)
 
 
+
+class Payment(models.Model):
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+        
+
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    ordered = models.BooleanField(default=False)
-
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    ref_code = models.CharField(max_length=20, blank=True, null=True)
     products = models.ManyToManyField(OrderItem)
-    
     start_date = models.DateTimeField(auto_now_add=True)
-
     ordered_date = models.DateTimeField()
-    
-    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, blank=True, null=True)
+    ordered = models.BooleanField(default=False)
+    shipping_address = models.ForeignKey(Address, related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
+    billing_address = models.ForeignKey(
+        Address, related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    payment = models.ForeignKey(
+        Payment, on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(
+        Coupon, on_delete=models.SET_NULL, blank=True, null=True)
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
+
 
     def get_total(self):
         total = 0
@@ -110,3 +154,5 @@ class ReviewRating(models.Model):
 
     def __str__(self):
         return self.review
+
+
