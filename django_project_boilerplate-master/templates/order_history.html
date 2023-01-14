@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{%block content%}
+{%if orders.isEmpty%}
+<div>
+    brak zamowien
+</div>
+{%endif%}
+
+{% for order in orders %}
+
+{{order.ordered_date}}
+<a href="order/{{order.id}}">see details</a>
+<hr>
+
+
+{%endfor%}
+{%endblock%}
