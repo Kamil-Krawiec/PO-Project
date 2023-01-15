@@ -1,17 +1,159 @@
 {% extends "base.html" %}
-{%block content%}
-{%if orders.isEmpty%}
-<div>
-    brak zamowien
-</div>
-{%endif%}
-
-{% for order in orders %}
-
-{{order.ordered_date}}
-<a href="order/{{order.id}}">see details</a>
-<hr>
+{% block content %}
 
 
-{%endfor%}
-{%endblock%}
+    <style>
+        @media (min-width: 1025px) {
+            .h-custom {
+                height: 100vh !important;
+            }
+        }
+
+        .horizontal-timeline .items {
+            border-top: 2px solid #ddd;
+        }
+
+        .horizontal-timeline .items .items-list {
+            position: relative;
+            margin-right: 0;
+        }
+
+        .horizontal-timeline .items .items-list:before {
+            content: "";
+            position: absolute;
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            background-color: #ddd;
+            top: 0;
+            margin-top: -5px;
+        }
+
+        .horizontal-timeline .items .items-list {
+            padding-top: 15px;
+        }
+    </style>
+
+    {% if orders.isEmpty %}
+        <div>
+            <h3>Aktualnie nie posiadasz zamówień</h3>
+        </div>
+    {% endif %}
+
+    {% for order in orders %}
+
+
+        {#            <div style="display: flex; flex-direction: row;">#}
+        <div class="row d-flex justify-content-center align-items-center h-100" style="padding: 20px">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card border-top border-bottom border-3" style="border-color: #f37a27 !important;">
+                    <div class="card-body p-5">
+
+                        <div style="display: flex;flex-direction: row; justify-content: space-between">
+                            <p class="lead fw-bold mb-5" style="color: #f37a27;">Purchase Reciept</p>
+                            <p class="lead fw-bold mb-5 ">Want any help? <a href="order/{{ order.id }}"
+                                                                            style="color: #f37a27;">Please contact
+                                us</a></p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col mb-3">
+                                <p class="small text-muted mb-1">Date</p>
+                                <p> {{ order.ordered_date }}</p>
+                            </div>
+                            <div class="col mb-3">
+                                <p class="small text-muted mb-1">Order No.</p>
+                                <p>{{ order.id }}</p>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th style="width:30%">Product</th>
+                                <th style="width:25%">Quantity</th>
+                                <th style="width:10%">Price</th>
+                            </tr>
+                            </thead>
+                        </table>
+                        {% for item in order.products.all %}
+                            <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
+                                <div style="display: flex; flex-direction: row; justify-content: space-between; margin-right: 30px">
+                                    <strong>{{ item.product.name }}</strong>
+                                    <p style="color: grey">x{{ item.quantity }}</p>
+                                    {% if item.get_total_discount_item_price == 0 %}
+                                        <p style="color: #f37a27">${{ item.get_total_item_price }}</p>
+                                    {% else %}
+                                        <p style="color: #f37a27">${{ item.get_total_discount_item_price }}</p>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        {% endfor %}
+
+                        <div class="row my-4">
+                            <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
+                                <p class="lead fw-bold mb-0" style="color: #f37a27;"><span style="padding-right: 10px;">TOTAL:</span>
+                                    ${{ order.get_total }}</p>
+                            </div>
+                        </div>
+
+                        <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+
+                                <div class="horizontal-timeline">
+
+                                    <ul class="list-inline items d-flex justify-content-between">
+                                        <li class="list-inline-item items-list">
+                                            <p class="py-1 px-2 rounded text-white"
+                                               style="background-color: #f37a27;">Ordered</p>
+                                        </li>
+                                        {% if order.being_delivered %}
+                                            <li class="list-inline-item items-list">
+                                                <p class="py-1 px-2 rounded text-white"
+                                                   style="background-color: #f37a27;">Shipped</p>
+                                            </li>
+                                        {% else %}
+                                            <li class="list-inline-item items-list">
+                                                <p>Shipped</p>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if order.received %}
+                                            <li class="list-inline-item items-list">
+                                                <p class="py-1 px-2 rounded text-white"
+                                                   style="background-color: #f37a27;margin-right: -8px;">Delivered</p>
+                                            </li>
+                                        {% else %}
+                                            <li class="list-inline-item items-list text-end" style="margin-right: 8px;">
+                                                <p style="margin-right: -8px;">Delivered</p>
+                                            </li>
+                                        {% endif %}
+
+
+                                    </ul>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col mb-3">
+                            <p class="small text-muted mb-1">Shipping_address:</p>
+                            <p>{{ order.shipping_address.street_address }}, {{ order.shipping_address.apartment_address }}, {{ order.shipping_address.country }}</p>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {#    </div>#}
+
+        <hr>
+
+    {% endfor %}
+
+
+
+{% endblock %}

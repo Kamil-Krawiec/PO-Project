@@ -1,12 +1,105 @@
 {% extends "base.html" %}
 
-{%block content%}
+{% block content %}
 
-{{order.shipping_address}}
+    <link rel="shortcut icon" href="https://mdbcdn.b-cdn.net/wp-content/themes/mdbootstrap4/favicon.ico" />
 
-{%for product in products%}
-{{product.product}}
-{%endfor%}
+    <link rel="canonical" href="https://mdbootstrap.com/docs/standard/extended/popup/" />s
+
+    <div class="row d-flex justify-content-center align-items-center h-100" style="padding: 20px">
+        <div class="col-lg-8 col-xl-6">
+            <div class="card border-top border-bottom border-3" style="border-color: #f37a27 !important;">
+
+                <div class="card-header" style="background-color: #f37a27; border-bottom: none">
+                    <h5 class="card-title text-white mt-2" id="exampleModalLabel">Contact Form</h5>
+                </div>
+
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class='far fa-file-alt fa-5x mb-3 '
+                           style='font-size:48px;color: #f37a27; padding-top: 20px'></i>
+                        <p>
+                            <strong>Contact us about your order</strong>
+                        </p>
+                        <p>
+                            Order number:
+                            <strong>{{ order.id }}</strong>
+                        </p>
+                    </div>
+
+                    <hr/>
+
+                    <form class="px-4" action="">
+                        <p class="text-center"><strong>Your problem:</strong></p>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example1"/>
+                            <label class="form-check-label" for="radio3Example1">
+                                Guarantee
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example2"/>
+                            <label class="form-check-label" for="radio3Example2">
+                                Request Refund
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example3"/>
+                            <label class="form-check-label" for="radio3Example3">
+                                Complaint
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example4"/>
+                            <label class="form-check-label" for="radio3Example4">
+                                Others
+                            </label>
+
+                            <p class="text-center"><strong>Tell us about the problem</strong></p>
+
+                            <!-- Message input -->
+                            <div class="form-outline mb-4">
+                                <textarea class="form-control" id="form4Example3" rows="4"></textarea>
+                                <label class="form-label" for="form4Example3">Expected time for respond: <span><strong>1-2 days</strong></span></label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-end" style="display: flex; flex-direction: row; justify-content: end">
+                    <p id="hiddentxt" class="lead  mb-1 " style="padding-right: 20px;"></p>
+                    <button type="button" class="btn btn-primary" style="background-color: #f37a27; border: none" onclick="doFunction();">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<script>
+
+const elem = document.getElementById("hiddentxt")
+
+let i = 0;
+let txt = "Sumbitting..."
+let speed = 50;
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+function doFunction() {
+    if (i < txt.length) {
+        elem.innerHTML += txt.charAt(i);
+        i++;
+        setTimeout(doFunction, speed);
+    }
+    sleep(1000).then(() => {
+    location.href = '/';
+});
+}
 
 
-{%endblock%}
+</script>
+
+{% endblock %}
+
