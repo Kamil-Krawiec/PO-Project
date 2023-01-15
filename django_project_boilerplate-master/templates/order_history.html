@@ -36,7 +36,7 @@
 
     {% if orders.isEmpty %}
         <div>
-            <h3>Aktualnie nie posiadasz zamówień</h3>
+            <h3>In this moment you dont have any orders</h3>
         </div>
     {% endif %}
 
@@ -51,7 +51,7 @@
 
                         <div style="display: flex;flex-direction: row; justify-content: space-between">
                             <p class="lead fw-bold mb-5" style="color: #f37a27;">Purchase Reciept</p>
-                            <p class="lead fw-bold mb-5 ">Want any help? <a href="order/{{ order.id }}"
+                            <p class="lead fw-bold mb-5 ">Want any help? <a href="/request-refund/{{ order.id }}"
                                                                             style="color: #f37a27;">Please contact
                                 us</a></p>
                         </div>
@@ -103,9 +103,9 @@
                             {{ order.get_total }}$
                         </p>
                     </div>
-  
+                        {% if order.coupon %}
                     <p class="lead fw-bold mb-0" style="color: #f37a27;">USED CODE:{{order.coupon.code}}</p>
-
+                    {%endif%} 
 
 
 {#                        <div class="row my-4">#}

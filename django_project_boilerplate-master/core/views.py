@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import *
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet
 from django.contrib import messages
 from django.views.generic import ListView,DetailView,View
 from django.utils import timezone
@@ -59,8 +59,11 @@ class OrderSummaryView(View):
                 'object': order
             }
             return render(self.request, 'order_summary.html', context)
-        except Exception:
+        except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
+            return render(self.request, 'order_summary.html')
+        except Exception:
+            messages.ERROR(self.request, "Something went wrong")
             return render(self.request, 'order_summary.html')
 
 
@@ -159,6 +162,9 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
+            if(not order.products.all()):
+                raise EmptyResultSet
+
             form = CheckoutForm()
             context = {
                 'form': form,
@@ -184,10 +190,14 @@ class CheckoutView(View):
             if billing_address_qs.exists():
                 context.update(
                     {'default_billing_address': billing_address_qs[0]})
+
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
             messages.info(self.request, "You do not have an active order")
             return redirect('home.html')
+        except EmptyResultSet:
+            messages.warning(self.request, "You cant order an empty order")
+            return redirect('order-summary')
         except Exception:
             messages.info(self.request, "Something gone wrong")
             return redirect('home.html')
@@ -320,12 +330,16 @@ class CheckoutView(View):
                     productItem.save()
 
                 order.save()
-
+                messages.success(self.request,"You ordered is complite! Your order-Id: "+str(order.id))
                 return redirect('success')
+            else: 
+                raise EmptyResultSet
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("order-summary")
-
+        except EmptyResultSet:
+            messages.warning(self.request, "You need to fill your Adress")
+            return redirect("checkout")
 
 
 def get_coupon(request, code):
@@ -400,3 +414,49 @@ def home_view(request):
         'proposed_products' : query_set
     }
     return render(request,'home.html',context)
+
+
+
+def refound_get(request, id):
+
+    if(request.method == 'GET'):
+        order = get_object_or_404(Order,id=id)
+        initial_values ={
+        'ref_code':str(order.id),
+        'message': "...",
+        'email':order.user.email,
+        }
+
+
+        form = RefundForm(initial=initial_values)
+        context = {
+            'form': form
+        }
+        return render(request, "request_refund.html", context)
+    elif (request.method == 'POST'):
+        form = RefundForm(request.POST)
+        if form.is_valid():
+            ref_code = form.cleaned_data.get('ref_code')
+            message = form.cleaned_data.get('message')
+            email = form.cleaned_data.get('email')
+            # edit the order
+            try:
+                order = Order.objects.get(id=ref_code)
+                order.refund_requested = True
+                order.save()
+
+                # store the refund
+                refund = Refund()
+                refund.order = order
+                refund.reason = message
+                refund.email = email
+                refund.save()
+
+                messages.success(request, "Your request was received.")
+                return render(request, 'home.html')
+
+            except ObjectDoesNotExist:
+                messages.info(request, "This order does not exist.")
+                return redirect("request-refund")
+
+        

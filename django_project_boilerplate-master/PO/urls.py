@@ -21,9 +21,9 @@ urlpatterns = [
     path('all_reviews/<id>', all_reviews, name='all_reviews'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
-    path('checkout/success', success_view, name='success'),
-    path('history/', order_history, name='success'),
+    path('history/', order_history, name='success'), 
     path('history/order/<id>', order_details, name='details'),
+    path('request-refund/<id>',refound_get, name='request-refund')
 ]
 
 if settings.DEBUG:
