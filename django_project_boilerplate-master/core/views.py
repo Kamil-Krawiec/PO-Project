@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import *
 from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet
@@ -418,6 +420,8 @@ def home_view(request):
 
 
 def refound_get(request, id):
+    order = get_object_or_404(Order, id=id)
+
 
     if(request.method == 'GET'):
         order = get_object_or_404(Order,id=id)
@@ -430,8 +434,13 @@ def refound_get(request, id):
 
         form = RefundForm(initial=initial_values)
         context = {
-            'form': form
+            'form': form,
+            'order': order,
+            'products': order.products.all()
+
         }
+
+
         return render(request, "request_refund.html", context)
     elif (request.method == 'POST'):
         form = RefundForm(request.POST)
@@ -453,6 +462,7 @@ def refound_get(request, id):
                 refund.save()
 
                 messages.success(request, "Your request was received.")
+                time.sleep(1000)
                 return render(request, 'home.html')
 
             except ObjectDoesNotExist:
