@@ -88,12 +88,25 @@
                                 </div>
 
                             </div>
+
                         {% endfor %}
 
                     <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9 "style="display: flex; flex-direction: row; justify-content: end; padding-right: 50px; padding-top: 20px">
                         <p class="lead fw-bold mb-0" style="color: #f37a27; padding-right: 20px">TOTAL:</p>
-                        <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order.get_total }}</p>
+
+
+
+                        <p class="lead fw-bold mb-0" style="color: #f37a27;">
+                            {% if order.coupon %}
+                            {{order.get_total_without_coupon}}$ - {{order.coupon.amount}}$
+                            {%endif%} 
+                            {{ order.get_total }}$
+                        </p>
                     </div>
+  
+                    <p class="lead fw-bold mb-0" style="color: #f37a27;">USED CODE:{{order.coupon.code}}</p>
+
+
 
 {#                        <div class="row my-4">#}
 {#                            <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">#}
