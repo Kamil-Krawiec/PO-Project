@@ -18,6 +18,12 @@ PAYMENT_CHOICES = (
     ('G','Gotowka')
 )
 
+COMPLAIN_CHOICES=(
+    ('C', 'Complaint'),
+    ('R', 'Refound'),
+    ('O','Other')
+)
+
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -162,3 +168,11 @@ class ReviewRating(models.Model):
         return self.review
 
 
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    accepted = models.BooleanField(default=False)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"{self.pk}"

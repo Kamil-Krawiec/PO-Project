@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-
     <main style="min-height: 75vh">
 
         <div class="container py-5 h-100 h-100 h-custom" style="filter: drop-shadow(0 0 0.35rem black);">
@@ -40,9 +39,10 @@
 
 
 
-                                        {% if object.get_items_sum == 0 %}
+                                        {% if not object.products.all  %}
                                             <h5 style="position: absolute; top: 60%">Your basket is <span style="color: red">empty</span>, go pick some items!</h5>
                                         {% endif %}
+
                                         {% for order_item in object.products.all %}
 
                                             <div class="row mb-4 d-flex justify-content-between align-items-center">
@@ -127,6 +127,8 @@
                                         <div style="display: flex; flex-direction: row; justify-content: space-between">
                                             <a class='btn btn-warning float-right ml-2' href='/checkout/'>Proceed to
                                                 checkout</a>
+
+
                                             <a class='btn btn-primary float-right' href='/'>Continue shopping</a>
                                         </div>
                                     </div>

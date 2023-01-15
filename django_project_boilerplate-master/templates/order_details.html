@@ -29,15 +29,10 @@
 
                     <hr/>
 
-                    <form class="px-4" action="">
+                    <form class="px-4" method="post" action="make/complain">
+                        {% csrf_token %}
                         <p class="text-center"><strong>Your problem:</strong></p>
 
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example1"/>
-                            <label class="form-check-label" for="radio3Example1">
-                                Guarantee
-                            </label>
-                        </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" name="exampleForm" id="radio3Example2"/>
                             <label class="form-check-label" for="radio3Example2">
@@ -64,12 +59,13 @@
                                 <label class="form-label" for="form4Example3">Expected time for respond: <span><strong>1-2 days</strong></span></label>
                             </div>
                         </div>
+                        <div class="card-footer text-end" style="display: flex; flex-direction: row; justify-content: end">
+                            <p id="hiddentxt" class="lead  mb-1 " style="padding-right: 20px;"></p>
+                            <button type="Submit" class="btn btn-primary" style="background-color: #f37a27; border: none" onclick="doFunction();">Submit</button>
+                        </div>
                     </form>
                 </div>
-                <div class="card-footer text-end" style="display: flex; flex-direction: row; justify-content: end">
-                    <p id="hiddentxt" class="lead  mb-1 " style="padding-right: 20px;"></p>
-                    <button type="button" class="btn btn-primary" style="background-color: #f37a27; border: none" onclick="doFunction();">Submit</button>
-                </div>
+
             </div>
         </div>
     </div>
