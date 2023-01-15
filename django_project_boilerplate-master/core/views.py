@@ -150,6 +150,7 @@ def submit_review(request, id):
 def all_reviews(request,id):
     product = get_object_or_404(Product, id=id)
     review_list = ReviewRating.objects.filter(product = product)
+
     context = {
         "product": product,
         "review_list": review_list
