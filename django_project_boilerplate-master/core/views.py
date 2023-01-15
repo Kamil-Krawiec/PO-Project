@@ -364,11 +364,13 @@ def success_view(request):
     return render(request,'success.html')
 
 def order_history(request):
-    context={
-        'orders':Order.objects.filter(
+    orders = Order.objects.filter(
             user=request.user,
             ordered=True
         )
+
+    context={
+        'orders': orders
     }
     return render(request,'order_history.html',context)
 
