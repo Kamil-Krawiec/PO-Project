@@ -134,6 +134,14 @@ class Order(models.Model):
             total -= self.coupon.amount
         return total
 
+
+    def get_total_without_coupon(self):
+        total = 0
+        for order_item in self.products.all():
+            total += order_item.get_final_price()
+        return total
+
+
     def get_items_sum(self):
         total = 0
         for order_item in self.products.all():

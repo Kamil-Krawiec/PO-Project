@@ -77,9 +77,9 @@
                         </table>
                         {% for item in order.products.all %}
                             <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
-                                <div style="display: flex; flex-direction: row; justify-content: space-between; margin-right: 30px">
-                                    <strong>{{ item.product.name }}</strong>
-                                    <p style="color: grey">x{{ item.quantity }}</p>
+                                <div style="display: flex; flex-direction: row; justify-content: space-between; margin-right: 10px">
+                                    <strong style="width: 45%">{{ item.product.name }}</strong>
+                                    <p style="color: grey; width: 30%">x{{ item.quantity }}</p>
                                     {% if item.get_total_discount_item_price == 0 %}
                                         <p style="color: #f37a27">${{ item.get_total_item_price }}</p>
                                     {% else %}
@@ -88,14 +88,32 @@
                                 </div>
 
                             </div>
+
                         {% endfor %}
 
-                        <div class="row my-4">
-                            <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
-                                <p class="lead fw-bold mb-0" style="color: #f37a27;"><span style="padding-right: 10px;">TOTAL:</span>
-                                    ${{ order.get_total }}</p>
-                            </div>
-                        </div>
+                    <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9 "style="display: flex; flex-direction: row; justify-content: end; padding-right: 50px; padding-top: 20px">
+                        <p class="lead fw-bold mb-0" style="color: #f37a27; padding-right: 20px">TOTAL:</p>
+
+
+
+                        <p class="lead fw-bold mb-0" style="color: #f37a27;">
+                            {% if order.coupon %}
+                            {{order.get_total_without_coupon}}$ - {{order.coupon.amount}}$
+                            {%endif%} 
+                            {{ order.get_total }}$
+                        </p>
+                    </div>
+  
+                    <p class="lead fw-bold mb-0" style="color: #f37a27;">USED CODE:{{order.coupon.code}}</p>
+
+
+
+{#                        <div class="row my-4">#}
+{#                            <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">#}
+{#                                <p class="lead fw-bold mb-0" style="color: #f37a27;"><span style="padding-right: 0px;">TOTAL:</span>#}
+{#                                    ${{ order.get_total }}</p>#}
+{#                            </div>#}
+{#                        </div>#}
 
                         <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
 
