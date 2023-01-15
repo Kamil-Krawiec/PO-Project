@@ -9,7 +9,7 @@ from .forms import *
 
 class HomeView(ListView):
     model=Product
-    template_name="home.html"
+    # template_name="home.html"
 
 
 
@@ -48,10 +48,7 @@ def add_to_cart(request, slug):
             return redirect("order-summary")
     except Exception:
             messages.ERROR(request, "Something went wrong")
-            return render(request, 'Home-View')
-
-
-
+            return render(request, 'home.html')
 
 
 class OrderSummaryView(View):
@@ -190,10 +187,10 @@ class CheckoutView(View):
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
             messages.info(self.request, "You do not have an active order")
-            return redirect("Home-View")
+            return redirect('home.html')
         except Exception:
             messages.info(self.request, "Something gone wrong")
-            return redirect("Home-View")
+            return redirect('home.html')
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
@@ -384,3 +381,22 @@ def order_details(request,id):
         'products': order.products.all()
     }
     return render(request,'order_details.html',context)
+
+import random
+def home_view(request):
+    product = Product.objects.all()
+
+    valid_profiles_id_list = Product.objects.all().values_list('id', flat=True)
+    random_return_size = 8
+    if valid_profiles_id_list.count() < 8:
+        random_return_size = random.randint(int(valid_profiles_id_list.count()/2), valid_profiles_id_list.count())
+
+    random_profiles_id_list = random.sample(list(valid_profiles_id_list), random_return_size)
+    query_set = Product.objects.filter(id__in=random_profiles_id_list).order_by('?')
+
+
+    context={
+        'object_list': product,
+        'proposed_products' : query_set
+    }
+    return render(request,'home.html',context)
