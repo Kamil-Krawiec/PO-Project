@@ -58,7 +58,9 @@ class Coupon(models.Model):
 class Product(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    image=models.ImageField(upload_to='images/')
     name = models.CharField(max_length=200)
+    description = models.CharField(max_length=1000)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE,default=None)
     slug = models.SlugField()
