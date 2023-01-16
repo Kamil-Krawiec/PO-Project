@@ -383,6 +383,8 @@ def order_history(request):
             ordered=True
         )
 
+    orders=orders.order_by('ordered_date').reverse()
+
     context={
         'orders': orders
     }
@@ -424,24 +426,27 @@ def refound_get(request, id):
 
 
     if(request.method == 'GET'):
-        order = get_object_or_404(Order,id=id)
-        initial_values ={
-        'ref_code':str(order.id),
-        'message': "...",
-        'email':order.user.email,
-        }
+        try: 
 
 
-        form = RefundForm(initial=initial_values)
-        context = {
-            'form': form,
-            'order': order,
-            'products': order.products.all()
-
-        }
+            initial_values ={
+            'ref_code':str(order.id),
+            'message': "...",
+            'email':order.user.email,
+            }
 
 
-        return render(request, "request_refund.html", context)
+            form = RefundForm(initial=initial_values)
+            context = {
+                'form': form,
+                'order': order,
+            }
+
+            return render(request, "request_refund.html", context)
+        except Exception:
+            messages.warning(request,"You send us a message to this order!")
+            return render(request, "request_refund.html")   
+
     elif (request.method == 'POST'):
         form = RefundForm(request.POST)
         if form.is_valid():
@@ -461,8 +466,9 @@ def refound_get(request, id):
                 refund.email = email
                 refund.save()
 
+
                 messages.success(request, "Your request was received.")
-                time.sleep(1000)
+
                 return render(request, 'home.html')
 
             except ObjectDoesNotExist:
