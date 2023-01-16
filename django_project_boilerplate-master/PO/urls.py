@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from core.views import *
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
+from django.views.static import serve 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,7 +23,9 @@ urlpatterns = [
     path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
     path('history/', order_history, name='success'), 
     path('history/order/<id>', order_details, name='details'),
-    path('request-refund/<id>',refound_get, name='request-refund')
+    path('request-refund/<id>',refound_get, name='request-refund'),
+    re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), 
 ]
 handler404 = "core.views.page_not_found_view"
 
