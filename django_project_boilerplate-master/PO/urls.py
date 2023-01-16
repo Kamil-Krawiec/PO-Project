@@ -25,6 +25,7 @@ urlpatterns = [
     path('history/order/<id>', order_details, name='details'),
     path('request-refund/<id>',refound_get, name='request-refund')
 ]
+handler404 = "core.views.page_not_found_view"
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,
