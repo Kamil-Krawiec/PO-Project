@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'star_ratings',
     'django_countries',
     'crispy_forms',
+    'django.contrib.admindocs'
 ]
 
 MIDDLEWARE = [
@@ -38,6 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.admindocs.middleware.XViewMiddleware'
 
 ]
 

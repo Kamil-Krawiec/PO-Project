@@ -7,6 +7,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.static import serve 
 
 urlpatterns = [
+    path('admin/doc/', include('django.contrib.admindocs.urls')) ,
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     # path('',HomeView.as_view(),name="Home-View"),
